@@ -1,0 +1,117 @@
+apply plugin: 'gwt-compiler'
+apply plugin: 'jetty'
+apply plugin: 'war'
+apply plugin: 'application'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'de.richsource.gradle.plugins:gwt-gradle-plugin:0.6'
+    }
+
+    ext.gwt = [
+            version: '2.7.0'
+    ]
+
+    ext.gwtbootstrap3 = [
+            version: '0.9.1'
+    ]
+}
+
+
+repositories {
+    jcenter()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+
+gwt {
+    gwtVersion = '2.7.0'
+
+    modules 'pt.ipg.ei.cloud.menu.Index'
+
+    compiler {
+        strict = true;
+        enableClosureCompiler = true;
+        disableClassMetadata = true;
+        disableCastChecking = true;
+    }
+}
+
+dependencies {
+    //compile group: 'com.google.gwt.inject', name:'gin', version:'2.1.2'
+    compile group: 'org.gwtbootstrap3', name: 'gwtbootstrap3', version: gwtbootstrap3.version
+    compile group: 'org.gwtbootstrap3', name: 'gwtbootstrap3-extras', version: gwtbootstrap3.version
+
+    compile group: 'com.google.gwt', name: 'gwt-servlet', version: gwt.version
+    compile group: 'com.google.gwt', name: 'gwt-user', version: gwt.version
+    compile group: 'com.google.gwt', name: 'gwt', version: gwt.version
+    compile group: 'com.google.gwt', name: 'gwt-dev', version: gwt.version
+    compile group: 'org.fusesource.restygwt', name: 'restygwt', version: '2.0.3'
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: '4.1.0.Final'
+    compile name: 'hibernate-validator-4.1.0.Final-sources'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.6.1'
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.6.1'
+    compile group: 'log4j', name: 'log4j', version: '1.2.16'
+
+
+    compile 'com.sun.jersey:jersey-core:1.17.1'
+    compile 'com.sun.jersey:jersey-server:1.17.1'
+    compile 'com.sun.jersey:jersey-servlet:1.17.1'
+}
+
+task replaceIndex(dependsOn: 'draftCompileGwt') << {
+    ant.delete dir: "$webAppDirName/index"
+    copy {
+        from "$buildDir/gwt/draftOut/index"
+        into "$webAppDirName/index"
+    }
+    Thread.start {
+        Thread.sleep(2000)
+        java.awt.Desktop.desktop.browse "http://localhost:8080".toURI()
+    }
+}
+task replaceIndexRemote(dependsOn: 'draftCompileGwt') << {
+    def webAppDirName = "${project(':teste-jetty').projectDir}/src/main/webapp"
+    ant.delete dir: "$webAppDirName/index"
+    copy {
+        from "$buildDir/gwt/draftOut/index"
+        into "$webAppDirName/index"
+    }
+    Thread.start {
+        Thread.sleep(2000)
+        java.awt.Desktop.desktop.browse "http://localhost:8080".toURI()
+    }
+}
+
+task replaceIndexRemoteFinal(dependsOn: 'compileGwt') << {
+    def webAppDirName = "${project(':web-server').buildDir}/exploded-app"
+    ant.delete dir: "$webAppDirName/index"
+    copy {
+        from "$buildDir/gwt/out/index"
+        into "$webAppDirName/index"
+    }
+    Thread.start {
+        Thread.sleep(2000)
+        java.awt.Desktop.desktop.browse "http://localhost:8081".toURI()
+    }
+}
+
+task printMe() << {
+    println project(':web-server').buildDir
+}
+
+jettyRun.dependsOn replaceIndex
+jettyRun.contextPath = '/'
+
+jettyRunWar.contextPath = '/'
+
+
+task runJettyTest(dependsOn: ['clean','replaceIndex',':teste-jetty:cleanRun'])
+
+replaceIndex.mustRunAfter clean
+task(':teste-jetty:cleanRun').mustRunAfter replaceIndex

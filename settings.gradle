@@ -1,0 +1,5 @@
+rootProject.name = 'cloud-menu'
+include 'web-server'
+include 'web-client'
+include 'teste-jetty'
+

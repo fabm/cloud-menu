@@ -1,0 +1,58 @@
+apply plugin: 'java'
+apply plugin: 'war'
+apply plugin: 'appengine'
+
+
+buildscript {
+
+    ext.appengine = [
+            version : "1.9.28"
+    ]
+    ext.googleClient = "1.19.0"
+    ext.gwt = [
+            version : "2.7.0"
+    ]
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath "com.google.appengine:gradle-appengine-plugin:${appengine.version}"
+    }
+}
+
+repositories {
+    jcenter();
+}
+
+
+dependencies{
+    appengineSdk "com.google.appengine:appengine-java-sdk:${appengine.version}"
+
+    compile 'javax.servlet:javax.servlet-api:3.1.0'
+    compile "com.google.appengine:appengine-endpoints:${appengine.version}"
+    compile 'com.googlecode.objectify:objectify:5.1.5'
+    compile ('com.google.inject.extensions:guice-servlet:3.0'){
+        exclude group:'asm', module:'asm'
+    }
+    compile "com.google.api-client:google-api-client-appengine:${googleClient}"
+    compile "com.google.http-client:google-http-client-jackson2:${googleClient}"
+    compile 'com.google.apis:google-api-services-plus:v1-rev155-1.19.0'
+    compile 'org.freemarker:freemarker:2.3.20'
+
+}
+
+appengine {
+    jvmFlags = ['-Xdebug', '-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000']
+
+    httpPort = 8081
+    httpAddress = '0.0.0.0'
+    downloadSdk = true
+    appcfg {
+        host = '0.0.0.0'
+        oauth2 = true
+    }
+    endpoints {
+        //getClientLibsOnBuild = true
+        //getDiscoveryDocsOnBuild = true
+    }
+}
