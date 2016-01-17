@@ -1,12 +1,11 @@
-apply plugin: 'java'
+apply plugin: 'groovy'
 apply plugin: 'war'
 apply plugin: 'appengine'
-
 
 buildscript {
 
     ext.appengine = [
-            version : "1.9.28"
+            version : "1.9.30"
     ]
     ext.googleClient = "1.19.0"
     ext.gwt = [
@@ -28,17 +27,27 @@ repositories {
 dependencies{
     appengineSdk "com.google.appengine:appengine-java-sdk:${appengine.version}"
 
+
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.5.4'
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.5.4'
+    compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.7.10'
+    compile group: 'org.hibernate', name: 'hibernate-validator', version: '4.1.0.Final'
+
     compile 'javax.servlet:javax.servlet-api:3.1.0'
     compile "com.google.appengine:appengine-endpoints:${appengine.version}"
     compile 'com.googlecode.objectify:objectify:5.1.5'
     compile ('com.google.inject.extensions:guice-servlet:3.0'){
         exclude group:'asm', module:'asm'
     }
+    compile group:'com.googlecode.gwtupload', name:'gwtupload', version:'1.0.3'
     compile "com.google.api-client:google-api-client-appengine:${googleClient}"
     compile "com.google.http-client:google-http-client-jackson2:${googleClient}"
     compile 'com.google.apis:google-api-services-plus:v1-rev155-1.19.0'
     compile 'org.freemarker:freemarker:2.3.20'
+    compile 'org.codehaus.groovy:groovy-all:2.4.5'
+    compile group:'org.modelmapper', name:'modelmapper', version:'0.7.5'
 
+    testCompile 'junit:junit:4.12'
 }
 
 appengine {
@@ -55,4 +64,11 @@ appengine {
         //getClientLibsOnBuild = true
         //getDiscoveryDocsOnBuild = true
     }
+}
+
+[sourceSets.main, sourceSets.test].each {
+    // compile java and groovy file at same time.
+    it.groovy.srcDirs += it.java.srcDirs
+    // disable java compilation
+    it.java.srcDirs = []
 }

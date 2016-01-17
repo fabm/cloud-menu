@@ -27,7 +27,6 @@ pre.prettyprint {
     padding-bottom: 10px;
     text-shadow: 0 1px 0 #fff;
     background-color: #f7f5fa;
-    border-radius: 5px;
 }
 
 /* All levels of nav */
@@ -105,6 +104,19 @@ pre.prettyprint {
     }
 }
 
+.back-ground-intro{
+}
+
+.inlineDisplay{
+    display: inline-block;
+}
+
+.listBoxNavBar {
+    margin-left: 0.3em;
+    margin-right: 4em;
+    display: inline-block;
+}
+
 /* Large desktops and up */
 @media screen and (min-width: 1200px) {
 
@@ -114,3 +126,4 @@ pre.prettyprint {
         width: 270px;
     }
 }
+

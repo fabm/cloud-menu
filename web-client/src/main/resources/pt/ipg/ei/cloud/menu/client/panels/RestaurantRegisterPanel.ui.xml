@@ -1,0 +1,96 @@
+<ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
+             xmlns:b="urn:import:org.gwtbootstrap3.client.ui"
+             xmlns:b.html="urn:import:org.gwtbootstrap3.client.ui.html"
+             xmlns:b.gwt="urn:import:org.gwtbootstrap3.client.ui.gwt"
+             xmlns:g="urn:import:com.google.gwt.user.client.ui"
+             xmlns:cm="urn:import:pt.ipg.ei.cloud.menu.client.components"
+
+>
+
+    <ui:with field="res" type="pt.ipg.ei.cloud.menu.client.translations.Translations"/>
+
+    <b:Container fluid="true">
+
+        <b:Row>
+            <b:Column size="LG_6" offset="LG_3">
+
+                <b:Form type="HORIZONTAL" action="" ui:field="form">
+                    <b:FieldSet>
+                        <b:Legend text="{res.restaurantMenuRegister}"></b:Legend>
+
+                        <b:FormGroup>
+                            <b:FormLabel for="name" addStyleNames="col-lg-4"
+                                         text="{res.restaurantLabelName}"/>
+                            <g:FlowPanel addStyleNames="col-lg-8">
+                                <b:TextBox b:id="name" ui:field="name">
+                                </b:TextBox>
+                            </g:FlowPanel>
+                            <b:InlineHelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-lg-offset-4"/>
+                        </b:FormGroup>
+
+                        <b:FormGroup>
+                            <b:FormLabel for="outIp" addStyleNames="col-lg-4"
+                                         text="{res.restaurantLabelOutIp}"/>
+                            <g:FlowPanel addStyleNames="col-lg-8">
+                                <cm:TextBoxWithMask b:id="outIp" ui:field="outIp"
+                                                    mask="999.999.999.999"></cm:TextBoxWithMask>
+                            </g:FlowPanel>
+                            <b:InlineHelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-lg-offset-4"/>
+                        </b:FormGroup>
+
+                        <b:FormGroup>
+                            <b:FormLabel for="description" addStyleNames="col-lg-4"
+                                         text="{res.restaurantLabelDescription}"/>
+                            <g:FlowPanel addStyleNames="col-lg-8">
+                                <b:TextArea b:id="description" ui:field="description"></b:TextArea>
+                            </g:FlowPanel>
+                            <b:InlineHelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-lg-offset-4"/>
+                        </b:FormGroup>
+
+                        <b:FormGroup>
+                            <b:FormLabel for="address" addStyleNames="col-lg-4"
+                                         text="{res.restaurantLocationAdress}"/>
+                            <g:FlowPanel addStyleNames="col-lg-8">
+                                <b:TextArea b:id="address" ui:field="address"></b:TextArea>
+                            </g:FlowPanel>
+                            <b:InlineHelpBlock iconType="EXCLAMATION_TRIANGLE" addStyleNames="col-lg-offset-4"/>
+                        </b:FormGroup>
+
+                        <b.gwt:HTMLPanel>
+                            <div class="form-group">
+                                <label class="control-label col-lg-4" for="photo">Foto</label>
+                                <div class="fileinput col-lg-8 fileinput-exists" data-provides="fileinput">
+                                    <div class="fileinput-new thumbnail" style="width: 200px; height: 150px;"></div>
+                                    <div class="fileinput-preview fileinput-exists thumbnail"
+                                         style="max-width: 200px; max-height: 150px; line-height: 10px;">
+                                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOTAiIGhlaWdodD0iMTQwIj48cmVjdCB3aWR0aD0iMTkwIiBoZWlnaHQ9IjE0MCIgZmlsbD0iI2VlZSIvPjx0ZXh0IHRleHQtYW5jaG9yPSJtaWRkbGUiIHg9Ijk1IiB5PSI3MCIgc3R5bGU9ImZpbGw6I2FhYTtmb250LXdlaWdodDpib2xkO2ZvbnQtc2l6ZToxMnB4O2ZvbnQtZmFtaWx5OkFyaWFsLEhlbHZldGljYSxzYW5zLXNlcmlmO2RvbWluYW50LWJhc2VsaW5lOmNlbnRyYWwiPjE5MHgxNDA8L3RleHQ+PC9zdmc+" style="max-height: 140px;"/>
+                                    </div>
+                                    <div>
+                                        <span class="btn btn-default btn-file">
+                                            <span class="fileinput-new">Select image</span>
+                                            <span class="fileinput-exists">Trocar foto</span>
+                                            <input type="hidden" value="" name=""/>
+                                            <input ui:field="cPhoto" name="photo" type="file"/>
+                                        </span>
+                                        <a class="btn btn-default fileinput-exists" data-dismiss="fileinput" href="#">
+                                            Eliminar foto
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </b.gwt:HTMLPanel>
+
+                        <b:FormGroup>
+                            <g:FlowPanel addStyleNames="col-lg-offset-4 col-lg-8">
+                                <b:Button ui:field="btRestRegister" text="{res.restaurantMenuRegister}"/>
+                            </g:FlowPanel>
+                        </b:FormGroup>
+
+
+                    </b:FieldSet>
+                </b:Form>
+            </b:Column>
+        </b:Row>
+    </b:Container>
+
+</ui:UiBinder>

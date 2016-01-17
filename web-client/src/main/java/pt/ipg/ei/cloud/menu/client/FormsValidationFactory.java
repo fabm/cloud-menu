@@ -9,12 +9,13 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.validation.client.AbstractGwtValidatorFactory;
 import com.google.gwt.validation.client.GwtValidation;
 import com.google.gwt.validation.client.impl.AbstractGwtValidator;
+import pt.ipg.ei.cloud.menu.shared.model.restaurant.RestaurantRegisterRequest;
 
 public class FormsValidationFactory extends AbstractGwtValidatorFactory {
 
 
 
-    @GwtValidation(MyObject.class)
+    @GwtValidation({RestaurantRegisterRequest.class,MyObject.class})
     public interface GwtValidator extends Validator {
     }
 

@@ -40,10 +40,15 @@ gwt {
         disableClassMetadata = true;
         disableCastChecking = true;
     }
+
+    minHeapSize = "1024M"
+    maxHeapSize = "4096M"
 }
 
 dependencies {
-    //compile group: 'com.google.gwt.inject', name:'gin', version:'2.1.2'
+    //only to annotate entities
+    compile group:'com.googlecode.objectify', name:'objectify', version:'5.0.3'
+
     compile group: 'org.gwtbootstrap3', name: 'gwtbootstrap3', version: gwtbootstrap3.version
     compile group: 'org.gwtbootstrap3', name: 'gwtbootstrap3-extras', version: gwtbootstrap3.version
 
@@ -58,10 +63,14 @@ dependencies {
     compile group: 'org.slf4j', name: 'slf4j-log4j12', version: '1.6.1'
     compile group: 'log4j', name: 'log4j', version: '1.2.16'
 
+    compile 'org.codehaus.groovy:groovy-all:2.4.5'
+    testCompile 'org.mockito:mockito-all:1.10.19'
+    testCompile 'junit:junit:4.12'
 
     compile 'com.sun.jersey:jersey-core:1.17.1'
     compile 'com.sun.jersey:jersey-server:1.17.1'
     compile 'com.sun.jersey:jersey-servlet:1.17.1'
+
 }
 
 task replaceIndex(dependsOn: 'draftCompileGwt') << {
@@ -70,10 +79,10 @@ task replaceIndex(dependsOn: 'draftCompileGwt') << {
         from "$buildDir/gwt/draftOut/index"
         into "$webAppDirName/index"
     }
-    Thread.start {
-        Thread.sleep(2000)
+    new Timer().schedule({
         java.awt.Desktop.desktop.browse "http://localhost:8080".toURI()
-    }
+    } as TimerTask, 2000);
+
 }
 task replaceIndexRemote(dependsOn: 'draftCompileGwt') << {
     def webAppDirName = "${project(':teste-jetty').projectDir}/src/main/webapp"
@@ -82,28 +91,42 @@ task replaceIndexRemote(dependsOn: 'draftCompileGwt') << {
         from "$buildDir/gwt/draftOut/index"
         into "$webAppDirName/index"
     }
-    Thread.start {
-        Thread.sleep(2000)
-        java.awt.Desktop.desktop.browse "http://localhost:8080".toURI()
-    }
+    new Timer().schedule({
+        java.awt.Desktop.desktop.browse "http://localhost:8081".toURI()
+    } as TimerTask, 2000);
 }
 
-task replaceIndexRemoteFinal(dependsOn: 'compileGwt') << {
+task replaceIndexRemoteFinal(dependsOn: ['compileGwt','copySharedFiles']) << {
     def webAppDirName = "${project(':web-server').buildDir}/exploded-app"
     ant.delete dir: "$webAppDirName/index"
     copy {
         from "$buildDir/gwt/out/index"
         into "$webAppDirName/index"
     }
-    Thread.start {
-        Thread.sleep(2000)
+    new Timer().schedule({
         java.awt.Desktop.desktop.browse "http://localhost:8081".toURI()
+    } as TimerTask, 2000);
+}
+
+task copySharedFiles()<<{
+    String srcMain = "${projectDir}/src/main/"
+    String destMain = "${project(':web-server').projectDir}/src/main/"
+    String[] sharedfolders = [
+            "java/pt/ipg/ei/cloud/menu/shared",
+            "webapp/css",
+            "webapp/img"
+    ]
+    for(String folder in sharedfolders){
+        delete "${destMain}${folder}"
+    }
+    for(String folder in sharedfolders){
+        copy{
+            from "${srcMain}${folder}"
+            into "${destMain}${folder}"
+        }
     }
 }
 
-task printMe() << {
-    println project(':web-server').buildDir
-}
 
 jettyRun.dependsOn replaceIndex
 jettyRun.contextPath = '/'
@@ -111,7 +134,7 @@ jettyRun.contextPath = '/'
 jettyRunWar.contextPath = '/'
 
 
-task runJettyTest(dependsOn: ['clean','replaceIndex',':teste-jetty:cleanRun'])
+task runJettyTest(dependsOn: ['clean', 'replaceIndex', ':teste-jetty:cleanRun'])
 
 replaceIndex.mustRunAfter clean
 task(':teste-jetty:cleanRun').mustRunAfter replaceIndex

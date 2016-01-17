@@ -2,7 +2,6 @@ package pt.ipg.ei.cloud.menu.server.auth;
 
 import com.google.api.client.auth.oauth2.AuthorizationCodeFlow;
 import com.google.api.client.auth.oauth2.AuthorizationCodeResponseUrl;
-import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.auth.oauth2.TokenResponse;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.services.plus.Plus;
@@ -10,6 +9,7 @@ import com.google.api.services.plus.model.Person;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.Singleton;
+import pt.ipg.ei.cloud.menu.guice.ServletAction;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -19,17 +19,17 @@ import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static pt.ipg.ei.cloud.menu.server.auth.Utils.configFreemarker;
+import static pt.ipg.ei.cloud.menu.server.auth.Utils.configTemplate;
+import static pt.ipg.ei.cloud.menu.shared.Constants.OAUTH_CONNECTED_STATE_CONNECTED;
 
 @Singleton
 public class MyAuthCallback extends HttpServlet {
     private final Lock lock = new ReentrantLock();
-    @Inject
-    private Provider<AuthCookies> authCookiesProvider;
     private AuthorizationCodeFlow flow;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        ServletAction.create(req,resp);
         StringBuffer buf = req.getRequestURL();
         if (req.getQueryString() != null) {
             buf.append('?').append(req.getQueryString());
@@ -53,23 +53,20 @@ public class MyAuthCallback extends HttpServlet {
                         .setRedirectUri(redirectUri)
                         .execute();
 
-                GoogleCredential googleCredential = new GoogleCredential().setAccessToken(response.getAccessToken());
+                ServerUserData plusUser = new PlusUser(response.getAccessToken());
 
-                Plus plus = new Plus.Builder(Utils.HTTP_TRANSPORT, Utils.JSON_FACTORY, googleCredential).setApplicationName("").build();
-                final Person person = plus.people().get("me").execute();
+                req.getSession(true).setAttribute(SessionUser.GOOGLE_ID,plusUser.getId());
+                req.getSession().setAttribute(SessionUser.DISPLAY_NAME,plusUser.getDisplayName());
 
-
-                authCookiesProvider.get().save(person.getId(), response.getAccessToken());
-                System.out.println("nick:"+person.getDisplayName());
-                onSuccess(person.getDisplayName(),resp);
+                resp.sendRedirect("/");
             } finally {
                 lock.unlock();
             }
         }
     }
 
-    private void onSuccess(String nickname, HttpServletResponse resp) throws IOException {
-        configFreemarker(nickname,"connected", resp.getWriter());
+    private void onSuccess(HttpServletResponse resp) throws IOException {
+        configTemplate(OAUTH_CONNECTED_STATE_CONNECTED, resp.getWriter());
     }
 
     private String getRedirectUri(HttpServletRequest req) {
@@ -81,6 +78,6 @@ public class MyAuthCallback extends HttpServlet {
     }
 
     private void onError(HttpServletRequest req, HttpServletResponse resp, AuthorizationCodeResponseUrl responseUrl) throws IOException {
-        configFreemarker("disconnected", resp.getWriter());
+        configTemplate("disconnected", resp.getWriter());
     }
 }

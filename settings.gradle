@@ -2,4 +2,6 @@ rootProject.name = 'cloud-menu'
 include 'web-server'
 include 'web-client'
 include 'teste-jetty'
+include 'converters'
+include 'gcs-sample'
 

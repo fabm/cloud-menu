@@ -104,6 +104,19 @@ pre.prettyprint {
     }
 }
 
+.back-ground-intro{
+}
+
+.inlineDisplay{
+    display: inline-block;
+}
+
+.listBoxNavBar {
+    margin-left: 0.3em;
+    margin-right: 4em;
+    display: inline-block;
+}
+
 /* Large desktops and up */
 @media screen and (min-width: 1200px) {
 
@@ -113,3 +126,4 @@ pre.prettyprint {
         width: 270px;
     }
 }
+

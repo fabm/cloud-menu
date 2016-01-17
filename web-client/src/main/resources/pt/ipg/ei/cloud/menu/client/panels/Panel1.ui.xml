@@ -5,6 +5,13 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
 
 >
+
+    <ui:style>
+        .cursor-pointer {
+            cursor: pointer;
+        }
+    </ui:style>
+
     <b:Panel>
         <b:PanelHeader>
             <b:Heading size="H3" text="Data Grid"/>

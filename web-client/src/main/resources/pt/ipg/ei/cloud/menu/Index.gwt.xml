@@ -15,12 +15,37 @@
   <replace-with class="pt.ipg.ei.cloud.menu.client.FormsValidationFactory">
     <when-type-is class="javax.validation.ValidatorFactory"/>
   </replace-with>
+  <replace-with
+          class="pt.ipg.ei.cloud.menu.client.translations.CustomValidationMessagesResolver">
+    <when-type-is
+            class="com.google.gwt.validation.client.UserValidationMessagesResolver" />
+  </replace-with>
 
   <replace-with class="pt.ipg.ei.cloud.menu.client.storage.StorageEventUtilsNotIE">
     <when-type-is class="pt.ipg.ei.cloud.menu.client.storage.StorageEventUtils"/>
   </replace-with>
 
+
+  <replace-with class="pt.ipg.ei.cloud.menu.client.nativejs.XHROthers">
+    <when-type-is class="pt.ipg.ei.cloud.menu.client.nativejs.XHR"/>
+  </replace-with>
+
+  <replace-with class="pt.ipg.ei.cloud.menu.client.nativejs.XHRInternetExplorer">
+    <when-type-is class="pt.ipg.ei.cloud.menu.client.nativejs.XHR"/>
+    <when-property-is name="user.agent" value="ie11" />
+    <when-property-is name="user.agent" value="ie12" />
+    <when-property-is name="user.agent" value="ie13" />
+  </replace-with>
+
+  <generate-with class="pt.ipg.ei.cloud.menu.rebind.ColumnsInitializerGenerator">
+    <when-type-assignable class="pt.ipg.ei.cloud.menu.client.columns.ColumnInitializer"/>
+  </generate-with>
+
   <!-- Inherit the core Web Toolkit stuff. -->
+
+
+  <inherits name="com.google.gwt.resources.Resources" />
+
   <inherits name='com.google.gwt.editor.Editor'/>
   <inherits name='com.google.gwt.core.Core'/>
   <inherits name='com.google.gwt.user.User'/>
@@ -28,8 +53,17 @@
   <inherits name="org.fusesource.restygwt.RestyGWT"/>
 
   <inherits name="org.gwtbootstrap3.GwtBootstrap3"/>
+  <inherits name="org.gwtbootstrap3.extras.notify.Notify"/>
+
   <!-- Specify the app entry point class. -->
   <entry-point class='pt.ipg.ei.cloud.menu.client.Index'/>
 
   <source path="client" />
+  <source path="shared"/>
+
+  <public path="resource">
+    <include name="css/demo.css"/>
+  </public>
+  <stylesheet src="css/demo.css"/>
+  <stylesheet src="http://cdnjs.cloudflare.com/ajax/libs/jasny-bootstrap/3.1.3/css/jasny-bootstrap.min.css"/>
 </module>

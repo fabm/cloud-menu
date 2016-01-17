@@ -31,44 +31,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Panel2 extends Composite implements Editor<MyObject> {
-    private final TestService service;
-
     interface Binder extends UiBinder<Widget, Panel2> {
     }
 
     private static Binder uiBinder = GWT.create(Binder.class);
 
-    interface EditorDriver extends SimpleBeanEditorDriver<MyObject, Panel2> {
-    }
-    private EditorDriver driver = GWT.create(EditorDriver.class);
-
-
-    @UiField
-    TextBox tbName;
-    @UiField
-    Form form;
-
-
-
     public Panel2() {
         initWidget(uiBinder.createAndBindUi(this));
-        driver.initialize(this);
-        final Resource resource = new Resource(GWT.getHostPageBaseURL()+"_ah/spi");
-        service = GWT.create(TestService.class);
-        ((RestServiceProxy)service).setResource(resource);
-
-        service.myServiceGet(new MethodCallback<MyObject>() {
-            @Override
-            public void onFailure(Method method, Throwable exception) {
-                Logger.getLogger("current").log(Level.SEVERE,"problem",exception);
-            }
-
-            @Override
-            public void onSuccess(Method method, MyObject response) {
-                driver.edit(response);
-            }
-        });
-
 
 
     }
@@ -76,29 +45,6 @@ public class Panel2 extends Composite implements Editor<MyObject> {
 
     @UiHandler("btSend")
     public void onSendClick(ClickEvent event) {
-        MyObject teste = driver.flush();
-
-        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<MyObject>> violations = validator.validate(teste);
-        if (violations.size() > 0) {
-            driver.setConstraintViolations(new ArrayList<ConstraintViolation<?>>(violations));
-        }else{
-            MyObject m = new MyObject();
-            m.setTbName("aaa");
-
-            service.myServicePost(m, new MethodCallback<MyObject>() {
-                @Override
-                public void onFailure(Method method, Throwable exception) {
-
-                }
-
-                @Override
-                public void onSuccess(Method method, MyObject response) {
-                    driver.edit(response);
-                }
-            });
-
-        }
 
     }
 

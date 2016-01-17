@@ -14,6 +14,7 @@
 
 package pt.ipg.ei.cloud.menu.server.auth;
 
+import com.google.api.client.auth.oauth2.Credential;
 import com.google.api.client.extensions.appengine.datastore.AppEngineDataStoreFactory;
 import com.google.api.client.extensions.appengine.http.UrlFetchTransport;
 import com.google.api.client.googleapis.auth.oauth2.GoogleAuthorizationCodeFlow;
@@ -22,11 +23,9 @@ import com.google.api.client.http.GenericUrl;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.Preconditions;
 import com.google.api.client.util.store.DataStoreFactory;
+import com.google.api.services.plus.Plus;
 import com.google.api.services.plus.PlusScopes;
-import freemarker.template.Configuration;
-import freemarker.template.Template;
-import freemarker.template.TemplateException;
-import freemarker.template.Version;
+import pt.ipg.ei.cloud.menu.templates.OauthResponseTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -36,9 +35,10 @@ import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
+
+import static pt.ipg.ei.cloud.menu.shared.Constants.OAUTH_NAME_KEY;
+import static pt.ipg.ei.cloud.menu.shared.Constants.OAUTH_STATE_KEY;
 
 public class Utils {
 
@@ -93,41 +93,20 @@ public class Utils {
     }
 
 
-    static void configFreemarker(String state, Writer writer) throws IOException {
-        configFreemarker(null,state,writer);
-    }
-    static void configFreemarker(String nick, String state, Writer writer) throws IOException {
-        Configuration cfg = new Configuration();
-        cfg.setClassForTemplateLoading(Utils.class, "/templates");
-        cfg.setIncompatibleImprovements(new Version(2, 3, 20));
-        cfg.setDefaultEncoding("UTF-8");
-        Map<String, String> map = new HashMap<String, String>();
-        map.put("name", nick);
-        map.put("oauthstate", state);
-        Template tpl = cfg.getTemplate("oauth.ftl");
-        try {
-            tpl.process(map, writer);
-        } catch (TemplateException e) {
-            throw new IllegalStateException("problem rendering the template",e);
-        }
+    static void configTemplate(String state, Writer writer) throws IOException {
+        OauthResponseTemplate template = new OauthResponseTemplate();
+        template.setOauthStateKey(OAUTH_STATE_KEY);
+        template.setOauthStateValue(state);
+        template.render().writeTo(writer);
     }
 
-    public static String loginUrl(HttpServletRequest req, boolean force) throws IOException {
-        String approvalPrompt;
-
-        if (force) {
-            approvalPrompt = "force";
-        } else {
-            approvalPrompt = "auto";
-        }
-
+    public static String loginUrl(HttpServletRequest req) throws IOException {
         final String takeIdUrl = initializeFlow()
                 .newAuthorizationUrl()
                 .setClientId(Utils.getClientSecrets().getDetails().getClientId())
-                .setApprovalPrompt(approvalPrompt)
+                .setApprovalPrompt("force")
                 .setRedirectUri(formatUri(req, AUTH_CALLBACK_SERVLET_PATH))
                 .build();
-
         return takeIdUrl;
     }
 
@@ -149,5 +128,10 @@ public class Utils {
         inToOutStream(Utils.class.getResourceAsStream("/pages/oauthResponse.html"), response.getOutputStream());
     }
 
+    public Plus getPlusService(Credential credential) {
+        return new Plus.Builder(Utils.HTTP_TRANSPORT, Utils.JSON_FACTORY, credential)
+                .setApplicationName("cloud-menu")
+                .build();
+    }
 
 }

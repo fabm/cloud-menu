@@ -5,16 +5,17 @@
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
 
 >
-    <b:Panel>
-        <b:PanelHeader>
-            <b:Heading size="H3" text="Intro Panel"/>
-        </b:PanelHeader>
-        <b:PanelBody>
-            <b.gwt:HTMLPanel>
-                This is my intro panel
-            </b.gwt:HTMLPanel>
-        </b:PanelBody>
 
-    </b:Panel>
+    <ui:style>
+        .centerText {
+            text-align: center;
+        }
+    </ui:style>
+
+        <b:Container fluid="true">
+            <b:Column size="MD_12">
+                <b.gwt:HTMLPanel styleName="{style.centerText}">Texto centrado2</b.gwt:HTMLPanel>
+            </b:Column>
+        </b:Container>
 
 </ui:UiBinder>

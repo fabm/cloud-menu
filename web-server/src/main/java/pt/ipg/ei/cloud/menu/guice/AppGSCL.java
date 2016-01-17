@@ -9,6 +9,6 @@ public class AppGSCL extends GuiceServletContextListener {
     @Override
     protected Injector getInjector() {
         System.out.println("creating injector");
-        return Guice.createInjector(new ServletModuleImp(),new GuiceSSSModule(),new AppModule());
+        return Guice.createInjector(new AppModule(),new ServletModuleImp(),new GuiceSSSModule());
     }
 }
